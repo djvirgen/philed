@@ -1,0 +1,70 @@
+body{
+    font-family: trebuchet ms;
+    font-size: 0.9em;
+    color: #555;
+    background: #fff;
+    /*width: 50em;*/
+    margin: 1em 2em;
+}
+
+a{
+    color: #36d;
+}
+
+table#files{
+    width: 100%;
+    border: 1px solid #abc;
+    border-collapse: collapse;
+    -webkit-box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.35);
+}
+
+table#files td,
+table#files th{
+    padding: 0.3em 0.6em;
+    text-align: left;
+}
+
+table#files thead tr{
+    background: #f2f4f6;
+}
+
+table#files tbody tr,
+table#files tfoot tr{
+    border-top: 1px solid #abc;
+}
+
+table#files tbody tr:hover{
+    background: #def;
+}
+
+table#files tbody td a{
+    
+}
+
+table#files tfoot tr{
+    background: #f2f4f6;
+}
+
+table#files td.size,
+table#files th.size{
+    text-align: right;
+}
+
+table#files img.icon{
+    vertical-align: middle;
+    border: none;
+    padding-bottom: 5px;
+    padding-right: 0.3em;
+}
+
+header{
+    display: block;
+}
+
+footer{
+    margin: 2em 0 0;
+    padding: 0;
+    display: block;
+    font-size: 0.8em;
+    text-align: center;
+}
