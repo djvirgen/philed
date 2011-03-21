@@ -123,7 +123,7 @@ function url($path)
 function serveFile($absPath)
 {
     $filename = basename($absPath);
-    $mime = mime_content_type($absPath);
+    $mime = system("file -bi " . escapeshellarg($absPath));
     header("Content-type: ${mime}");
     header("Content-Disposition: attachment; filename=\"{$filename}\"");
     readfile($absPath);
