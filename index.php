@@ -5,6 +5,11 @@ $config['path']                 = './data';
 
 /* =================================================*/
 
+set_include_path(implode(PATH_SEPARATOR, array(
+    dirname(__FILE__) . '/library',
+    '.'
+)));
+
 $uri = urldecode($_SERVER['REQUEST_URI']);
 $script = $_SERVER['SCRIPT_NAME'];
 $scriptPath = dirname($script);
@@ -38,6 +43,9 @@ if (is_file($absPath)) {
     exit;
 }
 
+require_once 'getid3/getid3.php';
+$id3 = new getID3();
+
 // Assume directory
 $files = getFiles($absPath);
 //$di = new DirectoryIterator($absPath);
@@ -69,8 +77,9 @@ $totalSize = 0;
         <?php if ('.' == substr($file['name'], 0, 1) AND '..' != $file['name']) continue; ?>
         <?php if ('..' == $file['name'] AND $absPath == $basePath) continue; ?>
         <tr>
-            <td class="name">
+            <td class="file">
                 <a href="<?php echo fileUrl($file['name']); ?>"><?php if ($file['type'] == 'dir'): ?><img src="<?php echo url('images/icons/folder.png') ?>" alt="" class="icon" /><?php else: ?><img src="<?php echo url('images/icons/page.png') ?>" alt="" class="icon" /><?php endif; ?><?php echo $file['name']; ?></a>
+                <?php echo get_file_info($absPath . '/' . $file['name']); ?>
             </td>
             <td class="size">
                 <?php if ('file' == $file['type']) echo pretty_size($file['size']); ?>
@@ -184,4 +193,59 @@ function pretty_size($size)
     } else {
         return number_format($size / 1048576, 2) . "MB";
     }
+}
+
+function get_file_info($file)
+{
+    global $id3;
+    $info = $id3->analyze($file);
+    $props = array();
+    
+    $props['Artist'] = extract_id3_info($info, 'artist');
+    $props['Title'] = extract_id3_info($info, 'title');
+    $props['Album'] = extract_id3_info($info, 'album');
+    $props['Year'] = extract_id3_info($info, 'year');
+    $props['Genre'] = extract_id3_info($info, 'genre');
+        
+    // Audio
+    if (isset($info['audio'])) {
+        $props['Bitrate'] = $info['audio']['bitrate'] / 1000 . 'kbps';
+        $props['Channels'] = ($info['audio']['channels'] == 2) ? 'Stereo' : 'Mono';
+        $props['Sample Rate'] = $info['audio']['sample_rate'] / 1000 . 'kHz';
+        if (isset($info['playtime_seconds'])) {
+            $minutes = floor($info['playtime_seconds'] / 60);
+            $seconds = floor($info['playtime_seconds']) % 60;
+            $props['Duration'] =  "{$minutes}:" . (($seconds < 10) ? "0{$seconds}" : $seconds);
+        }
+    }
+    
+    $html = '';
+    if (!empty($props)) {
+        foreach ($props as $label => $value) {
+            if (empty($value)) continue;
+            $html .= '<dt>' . escape($label) . '</dt><dd>' . escape($value) . '</dd>';
+        }
+    }
+    
+    if (!empty($html)) {
+        $html = '<dl class="info">' . $html . '</dl>';
+    }
+    
+    return $html;
+}
+
+function extract_id3_info(array $info, $key)
+{
+    if (isset($info['tags']['id3v2'][$key])) {
+        return implode(' ', $info['tags']['id3v2'][$key]);
+    } else if (isset($info['tags']['id3v1'][$key])) {
+        return implode(' ', $info['tags']['id3v1'][$key]);
+    } else {
+        return false;
+    }
+}
+
+function escape($str)
+{
+    return htmlentities($str, ENT_QUOTES, 'utf-8');
 }
