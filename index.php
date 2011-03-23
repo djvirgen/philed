@@ -189,9 +189,9 @@ function pretty_size($size)
     if ($size < 1024) {
         return number_format($size) . " B";
     } else if ($size < 1000000) {
-        return number_format($size / 1024, 2) . "KB";
+        return number_format($size / 1024, 2) . " KB";
     } else {
-        return number_format($size / 1048576, 2) . "MB";
+        return number_format($size / 1048576, 2) . " MB";
     }
 }
 
