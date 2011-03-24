@@ -22,7 +22,6 @@
     <target name="clean">
         
         <if>
-            <!--<equals arg1="${clean.installdir-exists}" arg2="1" />-->
             <available file="${installdir}" type="dir" property="clean.installdir-exists" />
             <then>
                 <echo level="warning" msg="Warning: Install directory ${installdir} already exists!" />
