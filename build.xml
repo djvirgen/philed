@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="Philed" basedir="." default="install">
+    <property name="site" value="philed" />
+    
+    <!-- Build Properties -->
+    <property name="srcdir" value="${project.basedir}/src" override="false" />
+    <propertyprompt 
+        propertyName="installdir" 
+        defaultValue="${project.basedir}/target"
+        promptText="Enter the install directory"
+        useExistingValue="true" />
+    <propertyprompt 
+        propertyName="mediapath" 
+        defaultValue="${installdir}/media"
+        promptText="Enter the media path"
+        useExistingValue="true" />
+    
+    <!-- ============================================  -->
+    <!-- Target: clean                                 -->
+    <!-- ============================================  -->
+    <target name="clean">
+        <echo msg="Cleaning ${installdir}" />
+        <delete dir="${installdir}" includeemptydirs="true" verbose="false" failonerror="true" />
+    </target>
+    
+    <!-- ============================================  -->
+    <!-- Target: prepare                               -->
+    <!-- ============================================  -->
+    <target name="prepare" depends="clean">
+        <echo msg="Making directory ${installdir}" />
+        <mkdir dir="${installdir}" />
+    </target>
+
+    <!-- ============================================  -->
+    <!-- Target: install                               -->
+    <!-- ============================================  -->
+    <target name="install" depends="prepare">
+        <echo msg="Copying files from ${srcdir} to ${installdir}" />
+        <copy todir="${installdir}">
+            <fileset dir="${srcdir}" defaultexcludes="false">
+                <include name="**" />
+                <include name=".htaccess" />
+            </fileset>
+            <filterchain>
+                <replacetokens begintoken="@@" endtoken="@@">
+                    <token key="MEDIAPATH" value="${mediapath}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+</project>
