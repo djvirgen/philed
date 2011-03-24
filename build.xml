@@ -20,6 +20,29 @@
     <!-- Target: clean                                 -->
     <!-- ============================================  -->
     <target name="clean">
+        
+        <if>
+            <!--<equals arg1="${clean.installdir-exists}" arg2="1" />-->
+            <available file="${installdir}" type="dir" property="clean.installdir-exists" />
+            <then>
+                <echo level="warning" msg="Warning: Install directory ${installdir} already exists!" />
+                <input propertyname="clean.confirmed" validargs="y,n" defaultValue="n" promptChar="?">Are you sure you want to delete ${installdir}? This cannot be undone!</input>
+            </then>
+            <else>
+                <echo msg="Install directory does not exist." />
+                <property name="clean.confirmed" value="y" override="false" />
+            </else>
+        </if>
+        
+        <if>
+            <equals arg1="${clean.confirmed}" arg2="y" />
+            <then>
+                <!-- OK -->
+            </then>
+            <else>
+                <fail msg="Confirmation required to erase existing install directory ${installdir}." />
+            </else>
+        </if>
         <echo msg="Cleaning ${installdir}" />
         <delete dir="${installdir}" includeemptydirs="true" verbose="false" failonerror="true" />
     </target>
