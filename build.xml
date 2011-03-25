@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Philed" basedir="." default="install">
+<project name="Philed" default="install">
     <property name="site" value="philed" />
     
     <!-- Build Properties -->
