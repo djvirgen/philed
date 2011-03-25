@@ -71,7 +71,9 @@ $totalSize = 0;
             <th class="size">Size</th>
         </tr>
     </thead>
-    
+    <?php
+    ob_start();
+    ?>
     <tbody>
         <?php foreach ($files as $file): ?>
         <?php if ('.' == substr($file['name'], 0, 1) AND '..' != $file['name']) continue; ?>
@@ -93,7 +95,9 @@ $totalSize = 0;
         ?>
         <?php endforeach; ?>
     </tbody>
-    
+    <?php
+    $tbody = ob_get_clean();
+    ?>
     <tfoot>
         <tr>
             <td class="name">
@@ -104,6 +108,8 @@ $totalSize = 0;
             </td>
         </tr>
     </tfoot>
+    
+    <?php echo $tbody; ?>
 </table>
 <footer>
     Copyright &copy; <?php echo date('Y'); ?> <a href="http://www.virgentech.com">Hector Virgen</a>
