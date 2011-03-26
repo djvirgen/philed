@@ -5,43 +5,63 @@
     
     <!-- Build Properties -->
     <property name="srcdir" value="${project.basedir}/src" override="false" />
-    <propertyprompt 
-        propertyName="installdir" 
-        defaultValue="${project.basedir}/target"
-        promptText="Enter the install directory"
-        useExistingValue="true" />
-    <propertyprompt 
-        propertyName="mediapath" 
-        defaultValue="${installdir}/media"
-        promptText="Enter the media path"
-        useExistingValue="true" />
+    <property name="config" value="${application.startdir}/deploy.props" override="true" />
+    
+    <!-- ============================================  -->
+    <!-- Target: config                                -->
+    <!-- ============================================  -->
+    <target name="config" description="Load configuration and prompt for missing properties.">
+	    <!-- Check for deploy.props in cwd -->
+	    <echo msg="Checking for local deploy configuration file ${config}" />
+	    <if>
+	        <available file="${config}" type="file" />
+	        <then>
+	            <echo msg="Found local config." />
+	            <property file="${config}" />
+	        </then>
+	        <else>
+	            <echo msg="No local config available." />
+	        </else>
+	    </if>
+	    
+	    <!-- Prompt for missing properties -->
+	    <propertyprompt 
+	        propertyName="installdir" 
+	        defaultValue="${project.basedir}/target"
+	        promptText="Enter the install directory"
+	        useExistingValue="true" />
+	    <propertyprompt 
+	        propertyName="mediapath" 
+	        defaultValue="${installdir}/media"
+	        promptText="Enter the media path"
+	        useExistingValue="true" />
+    </target>
     
     <!-- ============================================  -->
     <!-- Target: clean                                 -->
     <!-- ============================================  -->
-    <target name="clean">
+    <target name="clean" depends="config">
         
         <if>
             <available file="${installdir}" type="dir" property="clean.installdir-exists" />
             <then>
                 <echo level="warning" msg="Warning: Install directory ${installdir} already exists!" />
                 <input propertyname="clean.confirmed" validargs="y,n" defaultValue="n" promptChar="?">Are you sure you want to delete ${installdir}? This cannot be undone!</input>
+		        <if>
+		            <equals arg1="${clean.confirmed}" arg2="y" casesensitive="false" trim="true" />
+		            <then>
+		                <!-- OK -->
+		            </then>
+		            <else>
+		                <fail msg="Confirmation required to erase existing install directory ${installdir}." />
+		            </else>
+		        </if>
             </then>
             <else>
                 <echo msg="Install directory does not exist." />
-                <property name="clean.confirmed" value="y" override="false" />
             </else>
         </if>
         
-        <if>
-            <equals arg1="${clean.confirmed}" arg2="y" />
-            <then>
-                <!-- OK -->
-            </then>
-            <else>
-                <fail msg="Confirmation required to erase existing install directory ${installdir}." />
-            </else>
-        </if>
         <echo msg="Cleaning ${installdir}" />
         <delete dir="${installdir}" includeemptydirs="true" verbose="false" failonerror="true" />
     </target>
