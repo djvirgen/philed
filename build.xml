@@ -35,6 +35,9 @@
 	        defaultValue="${installdir}/media"
 	        promptText="Enter the media path"
 	        useExistingValue="true" />
+	        
+	    <echo msg="Installation directory: ${installdir}" />
+	    <echo msg="Media path: ${mediapath}" />
     </target>
     
     <!-- ============================================  -->
